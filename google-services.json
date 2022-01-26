@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "642727729945",
+    "project_id": "pasonshr",
+    "storage_bucket": "pasonshr.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:642727729945:android:940ab2119338556d1dc388",
+        "android_client_info": {
+          "package_name": "com.pasons.pasonshr"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "642727729945-d6ktl4tioscqbslld30ipsssnr9o9ip2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA12iXB41sSdKFHVnhm_32jSPJMgNJEUtU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "642727729945-d6ktl4tioscqbslld30ipsssnr9o9ip2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
