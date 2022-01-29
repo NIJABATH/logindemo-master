@@ -2,6 +2,7 @@ import 'package:logindemo/Models/Chat.dart';
 import '../ChatScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:logindemo/globals.dart' as globals;
+import '../globals.dart';
 import 'ChatCard.dart';
 
 class ChatBody extends StatelessWidget {
@@ -10,6 +11,8 @@ class ChatBody extends StatelessWidget {
 
   final screenId;
   final screen;
+
+  // get messageHeadData => null;
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +36,10 @@ class ChatBody extends StatelessWidget {
         // ),
         Expanded(
           child: ListView.builder(
-            itemCount: chatsData.length,
+            itemCount: messageDetails.length,
             itemBuilder: (context, index) => ChatCard(
-              chat: chatsData[index],
+              // chat: chatsData[index],
+              chat: messageDetails[index],
               press: () => Navigator.push(
                 context,
                 MaterialPageRoute(

@@ -27,7 +27,7 @@ class ChatCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 24,
-                  backgroundImage: AssetImage(chat.image),
+                  backgroundImage: AssetImage(chat.imagePath),
                 ),
                 if (chat.isActive)
                   Positioned(
@@ -55,7 +55,7 @@ class ChatCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      chat.name,
+                      chat.groupName,
                       style:
                       TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                     ),
@@ -74,7 +74,7 @@ class ChatCard extends StatelessWidget {
             ),
             Opacity(
               opacity: 0.64,
-              child: Text(chat.time),
+              child: Text(chat.messageTime),
             ),
           ],
         ),

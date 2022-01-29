@@ -137,7 +137,9 @@ class _ChatScreenState extends State<ChatScreen> {
     } else {
       deleteMessageFromList(args[3]);
     }
-    setState(() {});
+    if (this.mounted) {
+      setState(() {});
+    }
   }
 
   // deleteMessageFromList() {

@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:logindemo/profile.dart';
+import 'package:logindemo/service.dart';
+import 'package:logindemo/service.dart';
+import 'package:logindemo/service.dart';
 import 'package:logindemo/support.dart';
 import 'ChatScreen.dart';
+import 'api.dart';
 import 'components/ChatHome.dart';
 import 'db.dart';
 import 'globals.dart' as globals;
@@ -214,16 +218,22 @@ class _HomePageState extends State<HomePage> {
               height: 10,
             ),
             RaisedButton(
-              onPressed: () {
+              onPressed: () async {
                 getSettings();
-                Get.to(
-                    // ChatScreen(
-                    // name: globals.userName,
-                    // screenId: '2',
-                    // screen: "Suggestions")
-                    ChatHome(screenId: '2',
-                      screen: "Suggestions")
-                );
+                 var t = await getMessageDetails('2');
+                 // if(t == null){
+                 //   return CircularIndicator();
+                 // }else {
+                if(t != null){
+                   Get.to(
+                     // ChatScreen(
+                     // name: globals.userName,
+                     // screenId: '2',
+                     // screen: "Suggestions")
+                       ChatHome(screenId: '2',
+                           screen: "Suggestions")
+                   );
+                 }
               },
               color: Theme.of(context).accentColor,
               shape: RoundedRectangleBorder(

@@ -5,12 +5,16 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
+import 'Models/Chat.dart';
 import 'db.dart';
 import 'errorPage.dart';
 import 'globals.dart' as globals;
 import 'package:get/get.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
+
+// final ip = '10.1.1.123:81' ;
+final ip = '10.1.1.220:5001' ;
 
 Future<String> createLoginState(String userID, String password) async {
   globals.userID = userID;
@@ -22,7 +26,7 @@ Future<String> createLoginState(String userID, String password) async {
   // }
   try {
     final response = await http.get(Uri.parse(
-        'http://10.1.1.123:81/api/Hrs/LoginCheck?id=' + userID + '&password=' +
+        'http://'+ ip +'/api/Hrs/LoginCheck?id=' + userID + '&password=' +
             password));
     if (response.statusCode == 200) {
       globals.isLoggedIn = true;
@@ -61,7 +65,7 @@ Future<String> logIn(String userID, String password) async {
   // }
   try {
     final response = await http.get(Uri.parse(
-        'http://10.1.1.123:81/api/Hrs/logIn?id=' + userID + '&password=' + password));
+        'http://'+ ip +'/api/Hrs/logIn?id=' + userID + '&password=' + password));
     if (response.statusCode == 200) {
       globals.show = true;
       LoginData userMap = LoginData.fromJson(jsonDecode(response.body));
@@ -86,7 +90,7 @@ Future<ProfileData> getUserDetails(String userID) async {
    //BuildContext context ;
   try {
     final response = await http.get(Uri.parse(
-        'http://10.1.1.123:81/api/Hrs/getUserDetails?id=' + userID ));
+        'http://'+ ip +'/api/Hrs/getUserDetails?id=' + userID ));
     if (response.statusCode == 200) {
       globals.show = true;
       ProfileData userMap = ProfileData.fromJson(jsonDecode(response.body));
@@ -111,7 +115,7 @@ Stream <List<dynamic>?> getAnnouncement(String groupID) async* {
    //BuildContext context ;
   try {
     final response = await http.get(Uri.parse(
-        'http://10.1.1.123:81/api/Hrs/getAnnouncement?groupId=' + groupID ));
+        'http://'+ ip +'/api/Hrs/getAnnouncement?groupId=' + groupID ));
     if (response.statusCode == 200) {
       globals.show = true;
       List jsonResponse = json.decode(response.body);
@@ -121,6 +125,30 @@ Stream <List<dynamic>?> getAnnouncement(String groupID) async* {
       // return jsonResponse.map((job) => new AnnouncementData.fromJson(job)).toList();
 
       yield  announcementMap;
+    } else {
+      globals.show = false;
+      globals.showLoading = false;
+      throw Exception('Failed');
+    }
+  }catch(e){
+    Get.to(ErrorPage());
+    globals.showLoading = false;
+    globals.show = false;
+    throw Exception('Failed');
+  }
+}
+Future <List<dynamic>?> getMessageDetails(String screenId) async {
+  globals.showLoading = true;
+   //BuildContext context ;
+  try {
+    final response = await http.get(Uri.parse(
+        'http://'+ ip +'/api/Hrs/getMessageDetails?userId=' + globals.userID + '&screenId=' + screenId));
+    if (response.statusCode == 200) {
+      globals.show = true;
+      List jsonResponse = json.decode(response.body);
+      List messageHeadData =  jsonResponse.map((job) => new Chat.fromJson(job)).toList();
+      globals.messageDetails = messageHeadData;
+      return  messageHeadData;
     } else {
       globals.show = false;
       globals.showLoading = false;
@@ -143,7 +171,7 @@ Future<bool> saveProfile(profile) async {
   //List<Profile> list = profile;
   //String jsond = jsonEncode(profile);
   final response = await http.post(Uri.parse(
-      'http://10.1.1.123:81/api/Hrs/SaveProfile'),headers:{"Content-Type":"application/json"},body: profile);
+      'http://'+ ip +'/api/Hrs/SaveProfile'),headers:{"Content-Type":"application/json"},body: profile);
 
   if (response.statusCode == 200) {
     return json.decode(response.body) ;
@@ -166,7 +194,7 @@ Future<bool> sendPushNotification(String messageId,String message,String screenI
   var data = jsonEncode(notification);
 
   final response = await http.post(Uri.parse(
-      'http://10.1.1.123:81/api/Hrs/pushNotification'),headers:{"Content-Type":"application/json"},body: data);
+      'http://'+ ip +'/api/Hrs/pushNotification'),headers:{"Content-Type":"application/json"},body: data);
 
   if (response.statusCode == 200) {
     return json.decode(response.body) ;
@@ -179,7 +207,7 @@ Future<bool> sendPushNotification(String messageId,String message,String screenI
 Future<bool> logFirebaseToken(token) async {
 
   final response = await http.post(Uri.parse(
-      'http://10.1.1.123:81/api/Hrs/logFirebaseToken'),headers:{"Content-Type":"application/json"},body: token);
+      'http://'+ ip +'/api/Hrs/logFirebaseToken'),headers:{"Content-Type":"application/json"},body: token);
 
   if (response.statusCode == 200) {
     return json.decode(response.body) ;
@@ -285,6 +313,35 @@ class AnnouncementData{
     message = json['message'] == null ? "NULL" : json['message'];
     groupId = json['groupId'] == null ? "NULL" : json['groupId'];
     priority = json['priority'] == null ? "NULL" : json['priority'];
+  }
+
+}
+class MessageHeadData{
+  String groupName =  "NULL";
+  String lastMessage =  "NULL";
+  String messageTime =  "NULL";
+  String imagePath =  "NULL";
+  bool isActive =  false ;
+
+
+  MessageHeadData(
+      {required this.groupName,required this.lastMessage,required this.messageTime,required this.imagePath,required this.isActive});
+
+  // Map<String, dynamic> toJson() {
+  //   return {
+  //     'name': name,
+  //     'message': message,
+  //     'groupId': groupId,
+  //     'priority': priority,
+  //   };
+  // }
+
+  MessageHeadData.fromJson(Map<String, dynamic> json) {
+    groupName = json['groupName'] == null ? "NULL" : json['groupName'];
+    lastMessage = json['lastMessage'] == null ? "NULL" : json['lastMessage'];
+    messageTime = json['messageTime'] == null ? "NULL" : json['messageTime'];
+    imagePath = json['imagePath'] == null ? "NULL" : json['imagePath'];
+    isActive = json['isActive'] == null ? false : json['isActive'];
   }
 
 }

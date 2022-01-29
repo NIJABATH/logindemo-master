@@ -23,6 +23,8 @@ final listTransparentBg = Colors.white.withOpacity(0.12);
  String myGroupName = 'null';
  int lastMessageId = 0;
  String messageId = 'null';
+
+ List  messageDetails =  new List.filled(0, "null") ;
  // SignalRHelper signalR = new SignalRHelper();
 
 
