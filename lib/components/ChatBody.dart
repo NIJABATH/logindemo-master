@@ -46,7 +46,8 @@ class ChatBody extends StatelessWidget {
                   builder: (context) => ChatScreen(
                     name: globals.userName,
                     screenId:screenId,
-                    screen:screen,),
+                    screen:screen,
+                    groupId:messageDetails[index].groupId),
                 ),
               ),
             ),

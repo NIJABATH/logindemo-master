@@ -66,7 +66,8 @@ class _LoginScreenState extends State<LoginScreen> {
             message.data['senderName'],
             message.notification?.body,
             message.data['screenId'],
-            message.data['groupName']);
+            message.data['groupName'],
+            message.data['groupId']);
         RemoteNotification? notification = message.notification;
         AndroidNotification? android = message.notification?.android;
         if (notification != null && android != null) {

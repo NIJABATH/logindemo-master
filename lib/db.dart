@@ -15,10 +15,10 @@ Future<Database> initializeDB() async {
     join(path, 'pasonsHr.db'),
     onCreate: (database, version) async {
       await database.execute(
-        "CREATE TABLE textMessage(id INTEGER PRIMARY KEY AUTOINCREMENT,messageId TEXT NOT NULL, name TEXT NOT NULL,message TEXT NOT NULL,screenId int NOT NULL,groupName TEXT NOT NULL)",
+        "CREATE TABLE textMessage(id INTEGER PRIMARY KEY AUTOINCREMENT,messageId TEXT NOT NULL, name TEXT NOT NULL,message TEXT NOT NULL,screenId int NOT NULL,groupName TEXT NOT NULL,groupId TEXT NOT NULL)",
       );
       await database.execute(
-        "CREATE TABLE settings(id INTEGER PRIMARY KEY AUTOINCREMENT, userId TEXT NOT NULL,password TEXT NOT NULL,name TEXT NOT NULL,lastMessageId int)",
+        "CREATE TABLE settings(id INTEGER PRIMARY KEY AUTOINCREMENT, userId TEXT NOT NULL,password TEXT NOT NULL,name TEXT NOT NULL,myGroupName TEXT,lastMessageId int)",
       );
     },
     version: 1,
@@ -26,12 +26,12 @@ Future<Database> initializeDB() async {
 }
 
 void saveMessage(String messageId, String name, String? message,
-    String screenId, String groupName) async {
+    String screenId, String groupName , String groupId) async {
   // int result = 0;
   final Database db = await initializeDB();
   // result = await db.insert('announcement', message.toMap());
   int result = await db.rawInsert(
-      'INSERT INTO textMessage(messageId,name, message,screenId,groupName) VALUES("' +
+      'INSERT INTO textMessage(messageId,name, message,screenId,groupName,groupId) VALUES("' +
           messageId +
           '","' +
           name +
@@ -41,28 +41,31 @@ void saveMessage(String messageId, String name, String? message,
           screenId +
           '","' +
           groupName +
+          '","' +
+           groupId +
           '")');
 }
 
 void saveSettings(
-    String userId, String password, String name, int lastMessageId) async {
+    String userId, String password, String name,String myGroupName, int lastMessageId) async {
   int result = 0;
   final Database db = await initializeDB();
   result = await db.rawInsert(
-      'INSERT INTO settings(userId,password,name,lastMessageId) VALUES("' +
+      'INSERT INTO settings(userId,password,name,myGroupName,lastMessageId) VALUES("' +
           userId +
           '","' +
           password +
           '","' +
           name +
           '","' +
+          myGroupName +
+          '","' +
           lastMessageId.toString() +
           '")');
 }
  deleteSettings() async {
-  int result = 0;
   final Database db = await initializeDB();
-  result = await db.rawDelete(
+  return  await db.rawDelete(
       'DELETE FROM settings ');
 }
 
@@ -75,7 +78,7 @@ getSettings() async {
     globals.userID = list[0]["userId"];
     globals.password = list[0]["password"];
     globals.userName = list[0]["name"];
-    globals.myGroupName = list[0]["groupName"];
+    globals.myGroupName = list[0]["myGroupName"];
     globals.lastMessageId = list[0]["lastMessageId"];
     return true;
   }

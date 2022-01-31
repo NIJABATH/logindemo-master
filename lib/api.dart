@@ -73,7 +73,7 @@ Future<String> logIn(String userID, String password) async {
       globals.userName = userMap.name;
       globals.myGroupName = userMap.groupName;
       globals.lastMessageId = userMap.lastMessageId;
-      saveSettings(userID,password,userMap.name,globals.lastMessageId);
+      saveSettings(userID,password,userMap.name,globals.myGroupName,globals.lastMessageId);
       return userMap.status;
     } else {
       throw Exception('Failed');
@@ -137,12 +137,12 @@ Stream <List<dynamic>?> getAnnouncement(String groupID) async* {
     throw Exception('Failed');
   }
 }
-Future <List<dynamic>?> getMessageDetails(String screenId) async {
+Future <List<dynamic>?> getMessageGroupDetails(String screenId) async {
   globals.showLoading = true;
    //BuildContext context ;
   try {
     final response = await http.get(Uri.parse(
-        'http://'+ ip +'/api/Hrs/getMessageDetails?userId=' + globals.userID + '&screenId=' + screenId));
+        'http://'+ ip +'/api/Hrs/getMessageGroupDetails?userId=' + globals.userID + '&screenId=' + screenId));
     if (response.statusCode == 200) {
       globals.show = true;
       List jsonResponse = json.decode(response.body);

@@ -15,12 +15,13 @@ class ChatScreen extends StatefulWidget {
   final screenId;
   final screen;
   final messageId;
+  final groupId;
 
   // method() => createState().deleteMessageFromList('1');
   final _ChatScreenState chatScreenState = new _ChatScreenState();
 
    ChatScreen(
-      {Key? key, this.name, this.screenId, this.screen, this.messageId})
+      {Key? key, this.name, this.screenId, this.screen, this.messageId, this.groupId})
       : super(key: key);
 
   @override
@@ -43,18 +44,18 @@ class _ChatScreenState extends State<ChatScreen> {
   // late bool flg = false;
   SignalRHelper signalR = new SignalRHelper();
 
-  Future<Database> initializeDB() async {
-    String path = await getDatabasesPath();
-    return openDatabase(
-      join(path, 'pasonsHr.db'),
-      onCreate: (database, version) async {
-        await database.execute(
-          "CREATE TABLE textMessage(id INTEGER PRIMARY KEY AUTOINCREMENT,messageId TEXT NOT NULL, name TEXT NOT NULL,message TEXT NOT NULL,screenId int NOT NULL,groupName TEXT NOT NULL)",
-        );
-      },
-      version: 1,
-    );
-  }
+  // Future<Database> initializeDB() async {
+  //   String path = await getDatabasesPath();
+  //   return openDatabase(
+  //     join(path, 'pasonsHr.db'),
+  //     onCreate: (database, version) async {
+  //       await database.execute(
+  //         "CREATE TABLE textMessage(id INTEGER PRIMARY KEY AUTOINCREMENT,messageId TEXT NOT NULL, name TEXT NOT NULL,message TEXT NOT NULL,screenId int NOT NULL,groupName TEXT NOT NULL)",
+  //       );
+  //     },
+  //     version: 1,
+  //   );
+  // }
 
   void deleteMessageFromList(String messageId) {
     // setState(() {
@@ -93,7 +94,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<List<Message>> retrieveAnnouncement() async {
     final Database db = await initializeDB();
     List<Map> list = await db.rawQuery(
-        'SELECT * FROM textMessage where screenId =' + widget.screenId);
+        'SELECT * FROM textMessage where screenId =' + widget.screenId + ' AND groupId =' + widget.groupId);
     // final List<Map<String, Object?>> queryResult =
         await db.query('textMessage');
     setState(() {
@@ -206,7 +207,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                       globals.userName,
                                       txtController.text,
                                       widget.screenId,
-                                      globals.myGroupName);
+                                      globals.myGroupName,
+                                       widget.groupId);
                                   signalR.sendMessage(
                                       widget.name,
                                       txtController.text,

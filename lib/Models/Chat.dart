@@ -1,25 +1,16 @@
 class Chat {
-  // final String name, lastMessage, image, time;
-  // final bool isActive;
-  //
-  // Chat({
-  //   this.name = '',
-  //   this.lastMessage = '',
-  //   this.image = '',
-  //   this.time = '',
-  //   this.isActive = false,
-  // });
-
+  String groupId =  "";
   String groupName =  "";
   String lastMessage =  "";
   String messageTime =  "";
   String imagePath =  "NULL";
   bool isActive =  false ;
 
-  Chat({ required this.groupName,required this.lastMessage,
+  Chat({ required this.groupId,required this.groupName,required this.lastMessage,
     required this.messageTime,required this.imagePath,required this.isActive });
 
   Chat.fromJson(Map<String, dynamic> json) {
+    groupId = json['groupId'] == null ? "" : json['groupId'].toString();
     groupName = json['groupName'] == null ? "" : json['groupName'];
     lastMessage = json['lastMessage'] == null ? "" : json['lastMessage'];
     messageTime = json['messageTime'] == null ? "" : json['messageTime'];

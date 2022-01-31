@@ -220,7 +220,7 @@ class _HomePageState extends State<HomePage> {
             RaisedButton(
               onPressed: () async {
                 getSettings();
-                 var t = await getMessageDetails('2');
+                 var t = await getMessageGroupDetails('2');
                  // if(t == null){
                  //   return CircularIndicator();
                  // }else {

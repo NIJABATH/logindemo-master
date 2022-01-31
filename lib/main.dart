@@ -21,7 +21,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       // saveMessage('1','1',message.notification?.body,'nhk');
       saveMessage(message.data['messageId'], message.data['senderName'],
           message.notification?.body, message.data['screenId'],
-          message.data['groupName']);
+          message.data['groupName'],message.data['groupId']);
       // AndroidNotification? android = message.notification?.android;
       // flutterLocalNotificationsPlugin.show(
       //     message.data.hashCode,
