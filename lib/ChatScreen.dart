@@ -67,7 +67,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void sendDeleteMessage(String messageId) {
     deleteMessageFromList(messageId);
     signalR.sendMessage(
-        widget.name, txtController.text, globals.myGroupName, messageId, false);
+        widget.name, txtController.text, globals.myGroupName, messageId,widget.groupId, false);
     sendPushNotification(messageId,txtController.text,
         widget.screenId, false);
   }
@@ -122,13 +122,13 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   receiveMessageHandler(args) {
-    if (args[4]) {
+    if (args[5]) {
       signalR.messageList.add(Message(
           name: args[0],
           message: args[1],
           groupName: args[2],
           messageId: args[3],
-          messageStatus: args[4],
+          messageStatus: args[5],
           isMine: args[0] == widget.name));
       scrollController.animateTo(
         scrollController.position.maxScrollExtent + 75,
@@ -214,6 +214,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                       txtController.text,
                                       globals.myGroupName,
                                       globals.messageId,
+                                      widget.groupId,
                                       true);
                                   sendPushNotification(globals.messageId,txtController.text,
                                       widget.screenId, true);

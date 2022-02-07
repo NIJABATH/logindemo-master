@@ -20,8 +20,8 @@ class SignalRHelper {
     hubConnection.start();
   }
 
-  void sendMessage(String name, String message, String myGroupName, String messageId,bool messageStatus) {
-    hubConnection.invoke('SendMessage', args: [name, message,myGroupName,messageId,messageStatus]);
+  void sendMessage(String name, String message, String myGroupName, String messageId, String groupId,bool messageStatus) {
+    hubConnection.invoke('SendMessage', args: [name, message,myGroupName,messageId,groupId,messageStatus]);
     // messageList.add(Message(
     //     name: name,
     //     message: message,
