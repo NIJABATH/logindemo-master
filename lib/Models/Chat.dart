@@ -13,8 +13,8 @@ class Chat {
     groupId = json['groupId'] == null ? "" : json['groupId'].toString();
     groupName = json['groupName'] == null ? "" : json['groupName'];
     lastMessage = json['lastMessage'] == null ? "" : json['lastMessage'];
-    messageTime = json['messageTime'] == null ? "" : json['messageTime'];
-    imagePath = json['imagePath'] == null ? "NULL" : json['imagePath'];
+    messageTime = json['messageTimeAgo'] == null ? "" : json['messageTimeAgo'];
+      imagePath = json['imagePath'] == null ? "NULL" : json['imagePath'];
     isActive = json['isActive'] == null ? false : json['isActive'];
   }
 }

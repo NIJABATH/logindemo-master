@@ -12,11 +12,17 @@ class SignalRHelper {
   String textMessage='';
 
   void connect(receiveMessageHandler) {
-    hubConnection = HubConnectionBuilder().withUrl(url).build();
+    hubConnection = HubConnectionBuilder().withUrl(url).withAutomaticReconnect().build();
     // hubConnection.onclose((error) {
     //   log('Connection Close');
     // });
-    hubConnection.on('ReceiveMessage', receiveMessageHandler);
+    hubConnection.on('ReceiveMessage2', receiveMessageHandler);
+    hubConnection.start();
+  }
+
+  void getMessageDetails(receiveMessageDetailsHandler) {
+    hubConnection = HubConnectionBuilder().withUrl(url).build();
+    hubConnection.on('ReceiveMessageDetails', receiveMessageDetailsHandler);
     hubConnection.start();
   }
 
@@ -26,6 +32,11 @@ class SignalRHelper {
     //     name: name,
     //     message: message,
     //     isMine: true));
+    textMessage='';
+  }
+
+  void sendMessageDetails(String name) {
+    hubConnection.invoke('SendMessage', args: [name]);
     textMessage='';
   }
 

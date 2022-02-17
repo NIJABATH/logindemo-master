@@ -2,7 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:logindemo/components/colors.dart';
+import 'package:pasons_HR/components/colors.dart';
 
 class MessageBubble extends StatelessWidget {
   MessageBubble({this.sender, this.text, this.timestamp, this.isMe});

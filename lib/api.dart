@@ -161,6 +161,30 @@ Future <List<dynamic>?> getMessageGroupDetails(String screenId) async {
     throw Exception('Failed');
   }
 }
+Future <List<dynamic>?> getMessageChatDetails(String screenId) async {
+  globals.showLoading = true;
+   //BuildContext context ;
+  try {
+    final response = await http.get(Uri.parse(
+        'http://'+ ip +'/api/Hrs/getMessageChatDetails?userId=' + globals.userID + '&screenId=' + screenId));
+    if (response.statusCode == 200) {
+      globals.show = true;
+      List jsonResponse = json.decode(response.body);
+      List messageHeadData =  jsonResponse.map((job) => new Chat.fromJson(job)).toList();
+      globals.messageDetails = messageHeadData;
+      return  messageHeadData;
+    } else {
+      globals.show = false;
+      globals.showLoading = false;
+      throw Exception('Failed');
+    }
+  }catch(e){
+    Get.to(ErrorPage());
+    globals.showLoading = false;
+    globals.show = false;
+    throw Exception('Failed');
+  }
+}
 
 Future<bool> saveProfile(profile) async {
   if( profile == null || globals.saveFlag == false){
@@ -180,7 +204,7 @@ Future<bool> saveProfile(profile) async {
     throw Exception('Failed');
   }
 }
-Future<bool> sendPushNotification(String messageId,String message,String screenId, bool status) async {
+Future<bool> sendPushNotification(String messageId,String groupId,String message,String screenId, bool status) async {
 
   Map<String, dynamic> notification = {
     "messageId": messageId,
@@ -188,7 +212,7 @@ Future<bool> sendPushNotification(String messageId,String message,String screenI
     "message": message,
     "priority": '1',
     "screenId": screenId,
-    "groupId": 1,
+    "groupId":  int.parse(groupId),
     "status":status,
   };
   var data = jsonEncode(notification);

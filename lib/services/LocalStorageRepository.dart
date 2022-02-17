@@ -1,5 +1,5 @@
 import 'package:localstorage/localstorage.dart';
-import 'package:logindemo/services/i_local_storage_repository.dart';
+import 'package:pasons_HR/services/i_local_storage_repository.dart';
 
 class LocalStorageRepository implements ILocalStorageRepository {
   final LocalStorage _storage;

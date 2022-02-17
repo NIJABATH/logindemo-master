@@ -1,6 +1,5 @@
 
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'Models/Message.dart';
 import 'Models/MessageCard.dart';
@@ -68,7 +67,7 @@ class _ChatScreenState extends State<ChatScreen> {
     deleteMessageFromList(messageId);
     signalR.sendMessage(
         widget.name, txtController.text, globals.myGroupName, messageId,widget.groupId, false);
-    sendPushNotification(messageId,txtController.text,
+    sendPushNotification(messageId,widget.groupId,txtController.text,
         widget.screenId, false);
   }
 
@@ -147,10 +146,34 @@ class _ChatScreenState extends State<ChatScreen> {
   //   setState(() {});
   // }
 
+
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   return WillPopScope(
+  //     onWillPop: () async {
+  //       onBackPressed(); // Action to perform on back pressed
+  //       return false;
+  //     },
+  //     child: Scaffold(),
+  //   );
+  // }
+
+//   WillPopScope(
+//   onWillPop: () async {
+//   getMessageGroupDetails(widget.screenId);
+//   // Navigator.pop(context);
+//   // setState(() {
+//   // });
+//   return false;
+// },
+// child:
+
+
   @override
   Widget build(BuildContext context) {
     // if( flg == true && signalR.messageList[0].message != null) {
-    return Container(
+    return  Container(
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage('asset/images/doodle_backgound2.jpeg'),
@@ -216,7 +239,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                       globals.messageId,
                                       widget.groupId,
                                       true);
-                                  sendPushNotification(globals.messageId,txtController.text,
+                                  sendPushNotification(globals.messageId,widget.groupId,txtController.text,
                                       widget.screenId, true);
                                   txtController.clear();
                                   scrollController.jumpTo(scrollController
@@ -240,6 +263,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void initState() {
+
     signalR.connect(receiveMessageHandler);
     // Map<String, dynamic> data = storage.getItem('announcement.json');
     //

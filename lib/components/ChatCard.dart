@@ -1,5 +1,6 @@
-import 'package:logindemo/Models/Chat.dart';
 import 'package:flutter/material.dart';
+import 'package:pasons_HR/Models/MessageDetails.dart';
+
 
 // import '../../../constants.dart';
 import '../Constants.dart';
@@ -7,11 +8,11 @@ import '../Constants.dart';
 class ChatCard extends StatelessWidget {
   const ChatCard({
     Key? key,
-     required this.chat,
+     required this.messageDetails,
     required this.press,
   }) : super(key: key);
 
-   final Chat chat;
+   final MessageDetails messageDetails;
   final VoidCallback press;
 
   @override
@@ -27,9 +28,9 @@ class ChatCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 24,
-                  backgroundImage: AssetImage(chat.imagePath),
+                  backgroundImage: AssetImage(messageDetails.imagePath),
                 ),
-                if (chat.isActive)
+                if (messageDetails.isActive)
                   Positioned(
                     right: 0,
                     bottom: 0,
@@ -55,7 +56,7 @@ class ChatCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      chat.groupName,
+                      messageDetails.groupName,
                       style:
                       TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                     ),
@@ -63,7 +64,7 @@ class ChatCard extends StatelessWidget {
                     Opacity(
                       opacity: 0.64,
                       child: Text(
-                        chat.lastMessage,
+                        messageDetails.lastMessage,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -74,7 +75,7 @@ class ChatCard extends StatelessWidget {
             ),
             Opacity(
               opacity: 0.64,
-              child: Text(chat.messageTime),
+              child: Text(messageDetails.messageTime),
             ),
           ],
         ),

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:logindemo/progressdialog/progress_dialog.dart';
-import 'package:logindemo/service.dart';
+import 'package:pasons_HR/progressdialog/progress_dialog.dart';
+import 'package:pasons_HR/service.dart';
 import 'globals.dart' as globals;
 
 class Support extends StatefulWidget {

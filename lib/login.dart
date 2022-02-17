@@ -9,7 +9,6 @@ import 'ChatScreen.dart';
 import 'db.dart';
 import 'main.dart';
 import 'service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'globals.dart' as globals;
 
 import '../HomePage.dart';

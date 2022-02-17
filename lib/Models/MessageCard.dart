@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
-import 'package:logindemo/ChatScreen.dart';
+import 'package:pasons_HR/ChatScreen.dart';
 
 
 import '../db.dart';
