@@ -4,6 +4,7 @@ import 'package:flutter/painting.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:pasons_HR/ChatScreen.dart';
+import 'package:pasons_HR/globals.dart' as globals;
 
 
 import '../db.dart';
@@ -33,7 +34,7 @@ class MessageCard extends StatefulWidget {
 }
 
 class _MessageCardState extends State<MessageCard> {
-  final ChatScreen cs = new ChatScreen();
+  final ChatScreen cs = new ChatScreen(stream:globals.streamController.stream);
 
   @override
   Widget build(BuildContext context) {

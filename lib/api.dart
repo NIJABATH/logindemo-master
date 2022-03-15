@@ -13,8 +13,8 @@ import 'package:get/get.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
 
-// final ip = '10.1.1.123:81' ;
-final ip = '10.1.1.220:5001' ;
+final ip = '10.1.1.123:81' ;
+// final ip = '10.1.1.220:5001' ;
 
 Future<String> createLoginState(String userID, String password) async {
   globals.userID = userID;
@@ -52,7 +52,7 @@ Future<String> createLoginState(String userID, String password) async {
   }
 }
 
-Future<String> logIn(String userID, String password) async {
+Future<String> logIn(String userID, String password , bool autoLogin) async {
   globals.userID = userID;
   // if(userID == '1' && password == '123'){
   //   globals.userID = userID;
@@ -65,7 +65,7 @@ Future<String> logIn(String userID, String password) async {
   // }
   try {
     final response = await http.get(Uri.parse(
-        'http://'+ ip +'/api/Hrs/logIn?id=' + userID + '&password=' + password));
+        'http://'+ ip +'/api/Hrs/logIn?id=' + userID + '&password=' + password + '&autoLogin=' + autoLogin.toString()));
     if (response.statusCode == 200) {
       globals.show = true;
       LoginData userMap = LoginData.fromJson(jsonDecode(response.body));
@@ -73,6 +73,8 @@ Future<String> logIn(String userID, String password) async {
       globals.userName = userMap.name;
       globals.myGroupName = userMap.groupName;
       globals.lastMessageId = userMap.lastMessageId;
+      globals.privilegeId = userMap.privilegeId;
+      globals.userImagePath = userMap.imagePath;
       saveSettings(userID,password,userMap.name,globals.myGroupName,globals.lastMessageId);
       return userMap.status;
     } else {
@@ -82,6 +84,23 @@ Future<String> logIn(String userID, String password) async {
     // throw Exception('Failed');
     return '3';
   }
+}
+
+Future<String> Logout() async {
+  try {
+    final response = await http.get(Uri.parse(
+        'http://'+ ip +'/api/Hrs/Logout?id=' + globals.userID));
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Failed');
+    }
+  }catch(e){
+    // throw Exception('Failed');
+    return '3';
+  }
+
+
 }
 
 Future<ProfileData> getUserDetails(String userID) async {
@@ -204,7 +223,7 @@ Future<bool> saveProfile(profile) async {
     throw Exception('Failed');
   }
 }
-Future<bool> sendPushNotification(String messageId,String groupId,String message,String screenId, bool status) async {
+Future<bool> sendPushNotification(String messageId,String groupId,String message,String screenId, bool status ,String receiverId) async {
 
   Map<String, dynamic> notification = {
     "messageId": messageId,
@@ -214,6 +233,7 @@ Future<bool> sendPushNotification(String messageId,String groupId,String message
     "screenId": screenId,
     "groupId":  int.parse(groupId),
     "status":status,
+    "receiverId" : receiverId
   };
   var data = jsonEncode(notification);
 
@@ -257,9 +277,12 @@ class LoginData{
   bool messagePermission = false;
   String status = '0';
   String groupName = "null";
+  int privilegeId = 0;
+  String imagePath = "";
 
   LoginData(
-      {required this.lastMessageId,required this.name,required this.messagePermission,required this.status,required this.groupName});
+      {required this.lastMessageId,required this.name,required this.messagePermission,
+        required this.status,required this.groupName,required this.privilegeId,required this.imagePath});
 
   Map<String, dynamic> toJson() {
     return {
@@ -268,6 +291,7 @@ class LoginData{
       'messagePermission': messagePermission,
       'status': status,
       'groupName' : groupName,
+      'privilegeId' :privilegeId,
     };
   }
 
@@ -277,6 +301,8 @@ class LoginData{
     messagePermission = json['messagePermission'] == null ? "NULL" : json['messagePermission'];
     status = json['status'] == null ? "NULL" : json['status'];
     groupName = json['groupName'] == null ? "NULL" : json['groupName'];
+    privilegeId = json['privilegeId'] == null ? 0 : json['privilegeId'];
+    imagePath = json['imagePath'] == null ? "": json['imagePath'];
   }
 
 }

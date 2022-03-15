@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
+import 'Models/Message.dart';
+import 'Models/MessageDetails.dart';
 import 'SignalRHelper.dart';
 //import 'package:path_provider/path_provider.dart';
 
@@ -23,8 +27,18 @@ final listTransparentBg = Colors.white.withOpacity(0.12);
  String myGroupName = 'null';
  int lastMessageId = 0;
  String messageId = 'null';
-
+ int  privilegeId = 0;
+ int receiverId = 0;
+ String userImagePath = "";
  List  messageDetails =  new List.filled(0, "null") ;
+var messageDetailsList = <MessageDetails>[];
+var messageChatDetailsList = <MessageDetails>[];
+var messageList = <Message>[];
+StreamController <int> streamController = StreamController<int>.broadcast();
+String groupID = "";
+String senderID = "";
+String screenID = "";
+
  // SignalRHelper signalR = new SignalRHelper();
 
 

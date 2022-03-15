@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,6 +11,7 @@ import 'db.dart';
 import 'main.dart';
 import 'service.dart';
 import 'globals.dart' as globals;
+import 'Models/Message.dart' as mes;
 
 import '../HomePage.dart';
 import '../api.dart';
@@ -29,6 +31,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  var messageList = <mes.Message>[];
   // final TextEditingController _userid = TextEditingController();
   // final TextEditingController _password = TextEditingController();
   late double _height, _width;
@@ -45,8 +48,10 @@ class _LoginScreenState extends State<LoginScreen> {
   get onSelectNotification => null;
   FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
+
+
   @override
-  void initState() {
+  void initState()  {
     _totalNotifications = 0;
     super.initState();
     var initialzationSettingsAndroid =
@@ -54,10 +59,38 @@ class _LoginScreenState extends State<LoginScreen> {
     var initializationSettings =
         InitializationSettings(android: initialzationSettingsAndroid);
 
+    // _firebaseMessaging
+    //     .getToken()
+    //     .then((String? token) {
+    //   assert(token != null);
+    // });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+      // if (message.data['screenId'] == "2") {
+      Get.to(ChatScreen(name: globals.userName,
+        screenId: message.data['screenId'],
+        screen: message.data['screenName'],
+        messageId:"",
+        groupId: message.data['groupId'],
+        receiverId: message.data['receiverId'],
+        stream:globals.streamController.stream,
+      ));
+    });
+
+    // FirebaseMessaging.instance.getInitialMessage().then((message) {
+    //   if (message != null) {
+    //     Get.to(ChatScreen(name: globals.userName,
+    //       screenId: message.data['screenId'],
+    //       screen: message.data['screenName'],
+    //       messageId:"",
+    //       groupId: message.data['groupId'],
+    //       receiverId: message.data['receiverId'],));      }
+    // });
+
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       if (message.data['status'] == "False") {
-        ChatScreen chat = new ChatScreen();
+        ChatScreen chat = new ChatScreen(stream:globals.streamController.stream);
         chat.deleteMessageFromList(message.data['messageId']);
       } else {
         saveMessage(
@@ -66,7 +99,23 @@ class _LoginScreenState extends State<LoginScreen> {
             message.notification?.body,
             message.data['screenId'],
             message.data['groupName'],
-            message.data['groupId']);
+            message.data['groupId'],
+            message.data['senderID'],
+            message.data['time']);
+        if(globals.screenID == message.data['senderID'] && (globals.groupID == message.data['groupId'] || globals.senderID == message.data['senderID']) ) {
+          messageList.add(mes.Message(
+              name: message.data['senderName'],
+              message: (message.notification?.body != null ? message
+                  .notification?.body : "").toString(),
+              groupName: message.data['groupName'],
+              messageId: message.data['messageId'],
+              messageStatus: true,
+              time: message.data['time'],
+              isMine: false));
+          globals.messageList = messageList;
+          globals.streamController.add(1);
+        }
+
         RemoteNotification? notification = message.notification;
         AndroidNotification? android = message.notification?.android;
         if (notification != null && android != null) {
@@ -85,15 +134,28 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       }
     });
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-      if (message.data['screen'] == "announcement") {
-        Get.to(ChatScreen(name: globals.userName));
-      }
-    });
+
+
+    // RemoteMessage? initialMessage =
+    //     await FirebaseMessaging.instance.getInitialMessage();
+
+    // If the message also contains a data property with a "type" of "chat",
+    // navigate to a chat screen
+
+    // if (initialMessage?.data['screenId'] != '') {
+    //   Get.to(ChatScreen(name: globals.userName,
+    //     screenId: initialMessage?.data['screenId'],
+    //     screen: initialMessage?.data['screenName'],
+    //     messageId:"",
+    //     groupId: initialMessage?.data['groupId'],
+    //     receiverId: initialMessage?.data['receiverId'],));
+    // }
+
     autoLogIn();
   }
 
   void autoLogIn() async {
+    // _splashFlag = false;
     var flg = await getSettings();
     // final SharedPreferences prefs = await SharedPreferences.getInstance();
     // _userid =
@@ -103,7 +165,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _userid = globals.userID;
       _password = globals.password;
       if (flg && _userid != '' && _userid != null) {
-        signIn();
+        signIn(true);
         setState(() {
           _splashFlag = true;
         });
@@ -335,7 +397,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 setState(() {
                   _load = true;
                 });
-                signIn();
+                signIn(false);
               }
             },
             textColor: Colors.white,
@@ -358,9 +420,9 @@ class _LoginScreenState extends State<LoginScreen> {
           );
   }
 
-  Future<void> signIn() async {
+  Future<void> signIn(bool autoLogin) async {
     // try {
-    var connectivityResult = await (_futureJwt = logIn(_userid, _password));
+    var connectivityResult = await (_futureJwt = logIn(_userid, _password,autoLogin));
     if (connectivityResult == '1') {
       onNewToken();
       //_showLoading = false;
@@ -387,6 +449,12 @@ class _LoginScreenState extends State<LoginScreen> {
           backgroundColor: Colors.red,
         ),
       );
+    }else if (connectivityResult == '4') {
+      setState(() {
+        _load = false;
+      });
+      Get.snackbar('Error', 'you are already logged in another device',
+          colorText: Colors.red, snackPosition: SnackPosition.BOTTOM);
     }
   }
 }

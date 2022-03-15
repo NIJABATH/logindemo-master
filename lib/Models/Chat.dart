@@ -5,17 +5,21 @@ class Chat {
   String messageTime =  "";
   String imagePath =  "NULL";
   bool isActive =  false ;
+  String receiverId = "0";
+  String senderId = "0";
 
   Chat({ required this.groupId,required this.groupName,required this.lastMessage,
-    required this.messageTime,required this.imagePath,required this.isActive });
+    required this.messageTime,required this.imagePath,required this.isActive,required this.senderId });
 
   Chat.fromJson(Map<String, dynamic> json) {
     groupId = json['groupId'] == null ? "" : json['groupId'].toString();
     groupName = json['groupName'] == null ? "" : json['groupName'];
     lastMessage = json['lastMessage'] == null ? "" : json['lastMessage'];
     messageTime = json['messageTimeAgo'] == null ? "" : json['messageTimeAgo'];
-      imagePath = json['imagePath'] == null ? "NULL" : json['imagePath'];
+    imagePath = json['imagePath'] == null ? "NULL" : json['imagePath'];
     isActive = json['isActive'] == null ? false : json['isActive'];
+    receiverId = json['receiverId'].toString() == null ? "0" : json['receiverId'].toString();
+    senderId = json['senderId'] == null ? "0" : json['senderId'].toString();
   }
 }
 //

@@ -1,12 +1,16 @@
 import 'dart:ui';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:pasons_HR/profile.dart';
-import 'package:pasons_HR/support.dart';
+import 'package:pasons_HR/service.dart';
 import 'ChatScreen.dart';
 import 'api.dart';
+import 'components/AnnouncementHome.dart';
 import 'components/ChatHome.dart';
+import 'components/UserChatHome.dart';
 import 'db.dart';
 import 'globals.dart' as globals;
 import 'attendance.dart';
@@ -18,6 +22,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool _splashFlag = false;
   // @override
   // void initState()  {
   //   // _totalNotifications = 0;
@@ -48,15 +53,53 @@ class _HomePageState extends State<HomePage> {
   //
   // }
 
-  void logout() async {
+  void  initState()  {
+    super.initState();
+     Firebase.initializeApp();
+
+    // FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+    //
+    // _firebaseMessaging
+    //     .getToken()
+    //     .then((String? token) {
+    //   assert(token != null);
+    // });
+
+    // FirebaseMessaging.instance.getInitialMessage().then((message) {
+    //   if (message != null) {
+    //     Get.to(ChatScreen(name: globals.userName,
+    //       screenId: message.data['screenId'],
+    //       screen: message.data['screenName'],
+    //       messageId:"",
+    //       groupId: message.data['groupId'],
+    //       receiverId: message.data['receiverId'],));      }
+    // });
+
+    // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+    //   // if (message.data['screenId'] == "2") {
+    //   Get.to(ChatScreen(name: globals.userName,
+    //     screenId: message.data['screenId'],
+    //     screen: message.data['screenName'],
+    //     messageId:"",
+    //     groupId: message.data['groupId'],
+    //     receiverId: message.data['receiverId'],));
+    // });
+  }
+
+  void async;  logout() async {
+    await Logout();
     globals.userID = '';
     globals.password = '';
     await deleteSettings();
+    setState(() {
+      _splashFlag = false;
+    });
     return;
   }
 
   @override
   Widget build(BuildContext context) {
+    if(!_splashFlag) {
     return Scaffold(
         appBar: AppBar(
           title: Text('Home Page'),
@@ -66,15 +109,20 @@ class _HomePageState extends State<HomePage> {
                 Icons.logout,
                 color: Colors.white,
               ),
-              onPressed: () {
-                logout();
+              onPressed: () async {
+                await logout();
                 // Navigator.push(
                 //     context,
                 //     MaterialPageRoute(
                 //         builder: (context) => LoginScreen()));
-                Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => LoginScreen()),
-                    (Route<dynamic> route) => false);
+                // if(!_splashFlag) {
+                  Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                          (Route<dynamic> route) => false);
+                // }else {
+                // // Get.to(ErrorPage())
+                // return CircularIndicator();
+                // }
                 // do something
               },
             )
@@ -104,7 +152,13 @@ class _HomePageState extends State<HomePage> {
                       /*decoration: BoxDecoration(
                         color: Colors.red,
                         borderRadius: BorderRadius.circular(50.0)),*/
-                      child: Image.asset('asset/images/user.png'),
+                      // child: Image.asset('asset/images/user.png'),
+                       child: CircleAvatar(
+                          radius: 24,
+                          backgroundImage:  globals.userImagePath != ''
+                              ? NetworkImage(globals.userImagePath)
+                              : AssetImage('asset/images/user.png') as ImageProvider,
+                        )
                     ),
                   ),
                 ),
@@ -227,8 +281,10 @@ class _HomePageState extends State<HomePage> {
                      // name: globals.userName,
                      // screenId: '2',
                      // screen: "Suggestions")
-                       ChatHome(screenId: '2',
-                           screen: "Suggestions")
+                       globals.privilegeId == 2 ? ChatHome(screenId: '2',
+                           screen: "Suggestions") :
+                       UserChatHome(screenId: '2',
+                       screen: "Suggestions")
                    );
                  }
               },
@@ -261,10 +317,14 @@ class _HomePageState extends State<HomePage> {
             ),
             RaisedButton(
               onPressed: () {
-                Get.to(ChatScreen(
-                    name: globals.userName,
-                    screenId: '1',
-                    screen: "Announcement"));
+                Get.to(
+                    // ChatScreen(
+                    // name: globals.userName,
+                    // screenId: '1',
+                    // screen: "Announcement")
+                    AnnouncementHome(screenId: '1',
+                        screen: "Announcement")
+                );
               },
               color: Theme.of(context).accentColor,
               shape: RoundedRectangleBorder(
@@ -295,7 +355,9 @@ class _HomePageState extends State<HomePage> {
             ),
             RaisedButton(
               onPressed: () {
-                Get.to(Support());
+                // Get.to(Support());
+                ChatHome(screenId: '3',
+                    screen: "su[[ort");
               },
               color: Theme.of(context).accentColor,
               shape: RoundedRectangleBorder(
@@ -322,7 +384,10 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ],
-        )));
+        )));}else {
+  // Get.to(ErrorPage())
+  return CircularIndicator();
+  }
   }
 
 // void onNewToken() async {

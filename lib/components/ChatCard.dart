@@ -28,7 +28,11 @@ class ChatCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 24,
-                  backgroundImage: AssetImage(messageDetails.imagePath),
+                  // backgroundImage: AssetImage(messageDetails.imagePath),
+                  // backgroundImage: Image.network(messageDetails.imagePath) as ImageProvider,
+                backgroundImage:  'myMarkerThumb' != 'noImage'
+                ? NetworkImage(messageDetails.imagePath)
+                : AssetImage('assets/images/noImageAvailable.png') as ImageProvider,
                 ),
                 if (messageDetails.isActive)
                   Positioned(

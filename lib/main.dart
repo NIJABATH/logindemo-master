@@ -8,11 +8,15 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'db.dart';
+import 'firebase_options.dart';
 import 'globals.dart' as globals;
 import 'HomePage.dart';
 import 'api.dart';
 import 'login.dart';
 import 'ChatScreen.dart';
+bool _splashFlag = false;
+var _data;
+
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // await Firebase.initializeApp();
@@ -21,7 +25,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       // saveMessage('1','1',message.notification?.body,'nhk');
       saveMessage(message.data['messageId'], message.data['senderName'],
           message.notification?.body, message.data['screenId'],
-          message.data['groupName'],message.data['groupId']);
+          message.data['groupName'],message.data['groupId'],message.data['senderID'],message.data['time']);
       // AndroidNotification? android = message.notification?.android;
       // flutterLocalNotificationsPlugin.show(
       //     message.data.hashCode,
@@ -38,7 +42,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     }
   }else{
     // method() => createState().deleteMessageFromList('1');
-    ChatScreen chat = new ChatScreen();
+    ChatScreen chat = new ChatScreen(stream:globals.streamController.stream);
     chat.deleteMessageFromList(message.data['messageId']);
   }
 }
@@ -56,11 +60,70 @@ FlutterLocalNotificationsPlugin();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  // await Firebase.initializeApp();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+
+  // RemoteMessage? initialMessage =
+  // await FirebaseMessaging.instance.getInitialMessage();
+  //
+  // // If the message also contains a data property with a "type" of "chat",
+  // // navigate to a chat screen
+  // if (initialMessage?.data['screenId'] != '') {
+  //   Get.to(ChatScreen(name: globals.userName,
+  //     screenId: initialMessage?.data['screenId'],
+  //     screen: initialMessage?.data['screenName'],
+  //     messageId:"",
+  //     groupId: initialMessage?.data['groupId'],
+  //     receiverId: initialMessage?.data['receiverId'],));
+  // }
+
+  // _firebaseMessaging
+  //     .getToken()
+  //     .then((String? token) {
+  //   assert(token != null);
+  // });
+
+  // FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  //
+  // _firebaseMessaging
+  //     .getToken()
+  //     .then((String? token) {
+  //   assert(token != null);
+  // });
+
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+    _data = message;
+    Get.to(ChatScreen(name: globals.userName,
+      screenId: message.data['screenId'],
+      screen: message.data['screenName'],
+      messageId:"",
+      groupId: message.data['groupId'],
+      receiverId: message.data['receiverId'],
+        stream:globals.streamController.stream,
+    ));
+  });
+
+
+  // FirebaseMessaging.instance.getInitialMessage().then((message) {
+  //   if (message != null) {
+  //     _data = message;
+  //     _splashFlag = true;
+  //     Get.to(ChatScreen(name: globals.userName,
+  //       screenId: message.data['screenId'],
+  //       screen: message.data['screenName'],
+  //       messageId:"",
+  //       groupId: message.data['groupId'],
+  //       receiverId: message.data['receiverId'],));      }
+  // });
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     if (message.data['status'] == "False") {
-      ChatScreen chat = new ChatScreen();
+      ChatScreen chat = new ChatScreen(stream:globals.streamController.stream);
       chat.deleteMessageFromList(message.data['messageId']);
     }
   });
@@ -71,15 +134,23 @@ void main() async {
           AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
 
-      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-    if (message.data['click_action'] == "announcement") {
-      Get.to(ChatScreen(name:globals.userName));
-    }
-  });
+  // _firebaseMessaging.setForegroundNotificationPresentationOptions();
+
   runApp(MyApp());
   globals.isLoggedIn = false;
 }
 
+
+  notificationClick (){
+  return ChatScreen(name: globals.userName,
+    screenId: _data?.data['screenId'],
+    screen: _data?.data['screenName'],
+    messageId:"",
+    groupId: _data?.data['groupId'],
+    receiverId: _data?.data['receiverId'],
+      stream:globals.streamController.stream,
+  );
+}
 class MyApp extends StatefulWidget {
   @override
   MyAppState createState() => MyAppState();
@@ -91,7 +162,7 @@ class MyAppState extends State<MyApp> {
     return OverlaySupport(
         child: GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginPage(),
+      home:_splashFlag?notificationClick():LoginPage(),
       //home: LoginDemo(),
     ));
   }
@@ -117,10 +188,61 @@ class _LoginDemoState extends State<LoginDemo> with InputValidationMixin {
     // registerNotification();
     // checkForInitialMessage();
 
+    FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+
+    _firebaseMessaging
+        .getToken()
+        .then((String? token) {
+      assert(token != null);
+    });
+
+    FirebaseMessaging.instance.getInitialMessage().then((message) {
+      if (message != null) onLaunchMessageHandler(message.data);
+      if (message != null) {
+        Get.to(ChatScreen(name: globals.userName,
+          screenId: message.data['screenId'],
+          screen: message.data['screenName'],
+          messageId:"",
+          groupId: message.data['groupId'],
+          receiverId: message.data['receiverId'],
+          stream:globals.streamController.stream,));      }
+    });
+
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+      // if (message.data['screenId'] == "2") {
+      Get.to(ChatScreen(name: globals.userName,
+        screenId: message.data['screenId'],
+        screen: message.data['screenName'],
+        messageId:"",
+        groupId: message.data['groupId'],
+        receiverId: message.data['receiverId'],
+          stream:globals.streamController.stream
+      ));
+    });
+
+
     onNewToken();
 
     super.initState();
 
+  }
+
+
+
+  Future<dynamic> onLaunchMessageHandler(Map<String, dynamic> data) async {
+    try {
+      Get.to(ChatScreen(name: globals.userName,
+        screenId: data['screenId'],
+        screen: data['screenName'],
+        messageId:"",
+        groupId: data['groupId'],
+        receiverId: data['receiverId'],
+          stream:globals.streamController.stream,
+      ));
+    } catch (e) {
+      print('LAUNCH MESSAGE HANDLER CATCH ERROR: $e');
+    }
   }
 
   checkForInitialMessage() async {

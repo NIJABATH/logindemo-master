@@ -15,7 +15,7 @@ Future<Database> initializeDB() async {
     join(path, 'pasonsHr.db'),
     onCreate: (database, version) async {
       await database.execute(
-        "CREATE TABLE textMessage(id INTEGER PRIMARY KEY AUTOINCREMENT,messageId TEXT NOT NULL, name TEXT NOT NULL,message TEXT NOT NULL,screenId int NOT NULL,groupName TEXT NOT NULL,groupId TEXT NOT NULL)",
+        "CREATE TABLE textMessage(id INTEGER PRIMARY KEY AUTOINCREMENT,messageId TEXT NOT NULL, name TEXT NOT NULL,message TEXT NOT NULL,screenId int NOT NULL,groupName TEXT NOT NULL,groupId TEXT NOT NULL,senderID int NOT NULL,time TEXT)",
       );
       await database.execute(
         "CREATE TABLE settings(id INTEGER PRIMARY KEY AUTOINCREMENT, userId TEXT NOT NULL,password TEXT NOT NULL,name TEXT NOT NULL,myGroupName TEXT,lastMessageId int)",
@@ -26,12 +26,12 @@ Future<Database> initializeDB() async {
 }
 
 void saveMessage(String messageId, String name, String? message,
-    String screenId, String groupName , String groupId) async {
+    String screenId, String groupName , String groupId ,String senderID,String time) async {
   // int result = 0;
   final Database db = await initializeDB();
   // result = await db.insert('announcement', message.toMap());
   int result = await db.rawInsert(
-      'INSERT INTO textMessage(messageId,name, message,screenId,groupName,groupId) VALUES("' +
+      'INSERT INTO textMessage(messageId,name, message,screenId,groupName,groupId,senderID,time) VALUES("' +
           messageId +
           '","' +
           name +
@@ -43,6 +43,10 @@ void saveMessage(String messageId, String name, String? message,
           groupName +
           '","' +
            groupId +
+          '","' +
+          senderID +
+          '","' +
+          time +
           '")');
 }
 
